@@ -82,8 +82,26 @@ app.post("/products", (req, res)=> {
         thumbnail: ""
     };
 
-    products.push({title, description, code, price, stock, category});
+    products.push(newProduct);
     res.status(201).send(products)
+})
+
+app.put("/products/:pid", (req, res)=> {
+    const { pid } = req.params;
+    const { title, description, code, price, stock, category} = req.body;
+    const index = products.findIndex((products) => products.pid === pid)
+    if(index === -1) return res.status(404).send({message: "Error! Producto no encontrado"});
+
+    products[index] = {
+        title,
+        description,
+        code,
+        price,
+        stock,
+        category
+    }
+    res.status(200).send(products);
+
 })
 
 app.get("/carts", (req, res)=> {
