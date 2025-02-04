@@ -1,6 +1,6 @@
 import express from "express";
 
-const products = [
+let products = [
     { 
         pid: "1",
         title: "Havana Club",
@@ -88,20 +88,37 @@ app.post("/products", (req, res)=> {
 
 app.put("/products/:pid", (req, res)=> {
     const { pid } = req.params;
-    const { title, description, code, price, stock, category} = req.body;
+    const { title, description, code, price, stock, category, thumbnail, status} = req.body;
+
     const index = products.findIndex((products) => products.pid === pid)
     if(index === -1) return res.status(404).send({message: "Error! Producto no encontrado"});
 
-    products[index] = {
-        title,
-        description,
-        code,
-        price,
-        stock,
-        category
+    if (!title && !description && !code && !price && !stock && !category && !thumbnail && status === undefined) {
+        return res.status(400).json({ message: "Error! No se enviaron datos para actualizar" });
     }
-    res.status(200).send(products);
 
+    products[index] = {
+        ...products[index],
+        title: title ?? products[index].title,
+        description: description ?? products[index].description,
+        code: code ?? products[index].code,
+        price: price ?? products[index].price,
+        stock: stock ?? products[index].stock,
+        category: category ?? products[index].category,
+        thumbnail: thumbnail ?? products[index].thumbnail,
+        status: status ?? products[index].status,
+    };
+    res.status(200).json({ message: "Producto actualizado con éxito", product: products[index] });
+
+})
+
+app.delete("/products/:pid", (req, res)=> {
+    const { pid } = req.params;
+    const index = products.findIndex((products) => products.pid === pid );
+    if(index === -1) return res.status(404).send({ message: "Producto no encontrado"});
+    const productsFilter = products.filter((products) => products.pid !== pid);
+    products = [...productsFilter];
+    res.status(200).send(products);
 })
 
 app.get("/carts", (req, res)=> {
