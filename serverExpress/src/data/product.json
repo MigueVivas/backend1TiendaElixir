@@ -1,0 +1,35 @@
+[
+  {
+    "pid": "1",
+    "title": "Havana Club",
+    "description": "Un ron joven y ligero con un sabor equilibrado y ligeramente dulce. Ideal para cócteles como el clásico Cuba Libre.",
+    "code": "ronhvnc01",
+    "price": 14000,
+    "status": true,
+    "stock": 10,
+    "category": "ron",
+    "thumbnail": ""
+  },
+  {
+    "pid": "2",
+    "title": "Havana 7 años",
+    "description": "Un ron envejecido que destaca por sus notas de cacao, vainilla y frutas tropicales. Perfecto para tomar solo o con hielo.",
+    "code": "ronhvnc02",
+    "price": 17000,
+    "status": true,
+    "stock": 5,
+    "category": "ron",
+    "thumbnail": ""
+  },
+  {
+    "pid": "3",
+    "title": "Coca Cola 2,25 lts",
+    "description": "Un refresco icónico con un sabor dulce y burbujeante. Perfecto para disfrutar solo o como mezclador en bebidas. Presentacion de 2,25 lts",
+    "code": "gasccc0225",
+    "price": 3000,
+    "status": true,
+    "stock": 20,
+    "category": "gaseosa",
+    "thumbnail": ""
+  }
+]

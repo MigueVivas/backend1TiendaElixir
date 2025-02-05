@@ -1,118 +1,72 @@
 import express from "express";
+import ProductManager from "../ProductManager.js";
 
-const productsRouter = express.Router()
+const productsRouter = express.Router();
+const productManager = new ProductManager("./serverExpress/src/data/product.json");
 
-let products = [
-    { 
-        pid: "1",
-        title: "Havana Club",
-        description: "Un ron joven y ligero con un sabor equilibrado y ligeramente dulce. Ideal para cócteles como el clásico Cuba Libre.",
-        code: "ronhvnc01", 
-        price: 14000,
-        status: true,
-        stock: 10,
-        category: "ron",
-        thumbnail: "" 
-    },
-    {
-        pid: "2",
-        title: "Havana 7 años",
-        description: "Un ron envejecido que destaca por sus notas de cacao, vainilla y frutas tropicales. Perfecto para tomar solo o con hielo.",
-        code: "ronhvnc02", 
-        price: 17000,
-        status: true,
-        stock: 5,
-        category: "ron",
-        thumbnail: ""
-    },
-    {
-        pid: "3",
-        title: "Coca Cola 2,25 lts",
-        description: "Un refresco icónico con un sabor dulce y burbujeante. Perfecto para disfrutar solo o como mezclador en bebidas. Presentacion de 2,25 lts",
-        code: "gasccc0225", 
-        price: 3000,
-        status: true,
-        stock: 20,
-        category: "gaseosa",
-        thumbnail: ""
-    }
-]
+productsRouter.get("/", async (req, res) => {
+  try {
+    const data = await productManager.getProducts();
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(500).send({ message: error.message });
+  }
+});
 
-productsRouter.get("/", (req, res)=> {
-    res.status(200).send(products)
-})
-
-productsRouter.get("/:pid", (req, res) => {
+productsRouter.get("/:pid", async (req, res) => {
+  try {
     const { pid } = req.params;
-    const product = products.find((p) => p.pid === pid);
-    if (!product) return res.status(404).send({ message: `${pid} no es un producto registrado` });
-    res.send(product);
-})
+    const product = await productManager.getProductById(pid);
+    res.status(200).send(product);
+  } catch (error) {
+    res.status(404).send({ message: error.message });
+  }
+});
 
-productsRouter.get("/category/:category", (req, res)=>{
-    const {category} = req.params;
-    const filtercategory = products.filter((products)=> products.category === category);
-    if (filtercategory.length === 0) return res.status(404).send({ message: `${category} no es una categoria` });
-    res.send(filtercategory)
-    
-})
+productsRouter.get("/category/:category", async (req, res) => {
+  try {
+    const { category } = req.params;
+    const products = await productManager.getProducts();
+    const filterCategory = products.filter((p) => p.category === category);
+    if (filterCategory.length === 0) throw new Error(`No hay productos en la categoría ${category}`);
+    res.status(200).send(filterCategory);
+  } catch (error) {
+    res.status(404).send({ message: error.message });
+  }
+});
 
-productsRouter.post("/", (req, res)=> {
-   const {title, description, code, price, stock, category} = req.body;
-    if(!title || !description || !code || !price || !stock || !category) return res.status(400).send({message: "Error al registrar el producto, faltan datos para completar la operacion"})
-
-    const newId = products.length > 0 ? (parseInt(products[products.length - 1].pid) + 1).toString() : "1";
-
-
-    const newProduct = {
-        pid: newId,
-        title,
-        description,
-        code,
-        price,
-        status: true,
-        stock,
-        category,
-        thumbnail: ""
-    };
-
-    products.push(newProduct);
-    res.status(201).send(products)
-})
-
-productsRouter.put("/:pid", (req, res)=> {
-    const { pid } = req.params;
-    const { title, description, code, price, stock, category, thumbnail, status} = req.body;
-
-    const index = products.findIndex((products) => products.pid === pid)
-    if(index === -1) return res.status(404).send({message: "Error! Producto no encontrado"});
-
-    if (!title && !description && !code && !price && !stock && !category && !thumbnail && status === undefined) {
-        return res.status(400).json({ message: "Error! No se enviaron datos para actualizar" });
+productsRouter.post("/", async (req, res) => {
+  try {
+    const { title, description, code, price, stock, category } = req.body;
+    if (!title || !description || !code || !price || !stock || !category) {
+      throw new Error("Faltan datos para completar la operación");
     }
 
-    products[index] = {
-        ...products[index],
-        title: title ?? products[index].title,
-        description: description ?? products[index].description,
-        code: code ?? products[index].code,
-        price: price ?? products[index].price,
-        stock: stock ?? products[index].stock,
-        category: category ?? products[index].category,
-        thumbnail: thumbnail ?? products[index].thumbnail,
-        status: status ?? products[index].status,
-    };
-    res.status(200).json({ message: "Producto actualizado con éxito", product: products[index] });
+    const newProduct = await productManager.addProduct(req.body);
+    res.status(201).send(newProduct);
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+});
 
-})
-
-productsRouter.delete("/:pid", (req, res)=> {
+productsRouter.put("/:pid", async (req, res) => {
+  try {
     const { pid } = req.params;
-    const index = products.findIndex((products) => products.pid === pid );
-    if(index === -1) return res.status(404).send({ message: "Producto no encontrado"});
-    const productsFilter = products.filter((products) => products.pid !== pid);
-    products = [...productsFilter];
-    res.status(200).send(products);
-})
+    const updatedProduct = await productManager.setProductById(pid, req.body);
+    res.status(200).send({ message: "Producto actualizado con éxito", product: updatedProduct });
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+});
 
-export default productsRouter
+productsRouter.delete("/:pid", async (req, res) => {
+  try {
+    const { pid } = req.params;
+    const updatedProducts = await productManager.deleteProductById(pid);
+    res.status(200).send(updatedProducts);
+  } catch (error) {
+    res.status(404).send({ message: error.message });
+  }
+});
+
+export default productsRouter;
