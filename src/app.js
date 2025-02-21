@@ -6,14 +6,11 @@ import { Server } from "socket.io";
 import http from "http";
 import viewsRouter from "./routes/views.router.js";
 import path from "path";
-import { fileURLToPath } from 'url';
 import ProductManager from "./ProductManager.js";
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
@@ -23,7 +20,7 @@ app.engine('handlebars', engine({
     defaultLayout: 'main'
 }));
 app.set("view engine", "handlebars");
-app.set("views", path.join(__dirname, "serverExpress", "src", "views"));
+app.set("views", "./src/views");
 
 app.use(express.static("public"))
 
