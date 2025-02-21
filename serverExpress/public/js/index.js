@@ -17,6 +17,6 @@ formNewProduct.addEventListener("submit", (event) => {
 socket.on("productAdded", (newProduct)=> {
     const productsList = document.getElementById("productsList");
 
-    productsList.innerHTML += `<li>${newProduct.title} - ${newProduct.price}</li>`
+    productsList.innerHTML += `<li>${newProduct.title} - ${newProduct.price}</li>`;
 
 } );

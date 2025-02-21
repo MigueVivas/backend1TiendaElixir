@@ -40,7 +40,7 @@ io.on("connection", (socket)=> {
             console.error("Error añadiendo producto: ", error.message)
         }
     })
-})
+});
 
 
 server.listen( 8080, () => console.log("Servidor iniciado en: http://localhost:8080") );
