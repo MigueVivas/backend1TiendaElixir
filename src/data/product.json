@@ -31,5 +31,16 @@
     "stock": 20,
     "category": "gaseosa",
     "thumbnail": ""
+  },
+  {
+    "pid": "4",
+    "status": true,
+    "thumbnail": "",
+    "title": "Vodka Sky",
+    "descrption": "Vodka Premiun",
+    "code": "5",
+    "price": "10000",
+    "stock": "5",
+    "category": "Vodka"
   }
 ]
