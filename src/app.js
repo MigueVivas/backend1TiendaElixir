@@ -8,20 +8,15 @@ import Product from "./models/products.model.js";
 import http from "http";
 import viewsRouter from "./routes/views.router.js";
 import path from "path";
+import dotenv from "dotenv";
+import connectMongoDB from "./db/db.js";
 
+dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-const connectMongoDB = async() => {
-    try {
-        await mongoose.connect("mongodb+srv://coder:coderpass@elixir-cluster.8ttvd.mongodb.net/tienda_elixir?retryWrites=true&w=majority&appName=elixir-cluster")
-        console.log("Conectado con MongoDB")
-    } catch (error) {
-        console.log("Error al conectar con MongoDB: ", error.message)
-    }
-}
 connectMongoDB();
 
 app.use(express.json());
